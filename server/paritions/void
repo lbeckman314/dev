@@ -1,0 +1,12 @@
+Disk /dev/sda: 149.1 GiB, 160041885696 bytes, 312581808 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xc219a2da
+
+Device     Boot     Start       End   Sectors  Size Id Type
+/dev/sda1  *         2048   1026047   1024000  500M  7 HPFS/NTFS/exFAT
+/dev/sda2         1026048 157887104 156861057 74.8G  7 HPFS/NTFS/exFAT
+/dev/sda3       157888512 174665727  16777216    8G 82 Linux swap / Solaris
+/dev/sda4  *    174665728 312581807 137916080 65.8G 83 Linux

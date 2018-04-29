@@ -1,0 +1,2 @@
+#https://www.linuxquestions.org/questions/linux-security-4/how-to-check-log-files-for-ssh-connection-attempts-906237/
+cat /var/log/auth.log | tail -n 100 | grep "sshd"

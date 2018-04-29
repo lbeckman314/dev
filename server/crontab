@@ -1,0 +1,7 @@
+@daily certbot renew
+
+#@reboot /home/USERNAME/PATH/TO/GITHUB_USERNAME.github.io/jekyll.conf
+@reboot bundle exec `which jekyll` build --source /home/USERNAME/PATH/TO/GITHUB_USERNAME.github.io --destination /var/www/html/WEBSITE.com/public_html --incremental --watch
+
+#@reboot sleep 30; curl http://192.168.1.1/singleStaticIP.htm -u USERNAME:"PASSWORD" | grep -E '(([0-9])+\.){3}[0-9]+' |  mail -s "pi reboot cron @reboot" EMAIL_USERNAME@mail.com
+@reboot sleep 30; curl https://canihazip.com/s |  mail -s "pi ip" EMAIL_USERNAME@mail.com

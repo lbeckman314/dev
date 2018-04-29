@@ -1,0 +1,15 @@
+# Adds option to boot into windows partition from grub menu
+# /etc/grub.d/40_custom
+# https://wiki.archlinux.org/index.php/GRUB#Configuration
+# Windows installed in BIOS-MBR mode
+
+if [ "${grub_platform}" == "pc" ]; then
+  menuentry "Microsoft Windows 10 BIOS-MBR (it works baby!)" {
+    insmod part_msdos
+    insmod ntfs
+    insmod search_fs_uuid
+    insmod ntldr
+    search --fs-uuid --set=root --hint-bios=hd0,msdos1 --hint-efi=hd0,msdos1 --hint-baremetal=ahci0,msdo1 7AF60DABF60D6929 
+    ntldr /bootmgr
+  }
+fi

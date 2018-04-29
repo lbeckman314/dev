@@ -1,0 +1,169 @@
+#!/bin/bash
+# wrapper for xbps-install that waits untill previous xbps-install command is done.
+# adapted from script by Radu Rădeanu
+# https://askubuntu.com/questions/132059/how-to-make-a-package-manager-wait-if-another-instance-of-apt-is-running
+
+# this script may do many evil things! read it before installing it.
+# save script as /usr/local/sbin/xbps-install
+# chmod u+x /usr/local/sbin/xbps-install
+# if instead you want this to be a wrapper for xbps-remove, then
+# sed -i -e 's/-install/-remove/gc' /usr/local/sbin/xbps-remove
+
+
+# default seconds between checking if package database is still locked
+refreshInterval=0.5
+
+# default behavior is to search the ps -aux for a /usr/bin/xbps-install
+# process. Setting lock=1 will instead compare /proc/locks for a
+# pid that matches /usr/bin/xbps-install. A little more complicated.
+lock=0
+
+# Parse any args
+# https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
+POSITIONAL=()
+while [ $# -gt 0 ]
+do
+key="$1"
+
+    case $key in
+        --lockfile)
+        lock=1
+        shift # past argument
+        ;;
+        --refresh)
+        refreshInterval="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        *)    # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
+
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+trap "echo; echo 'SIGINT received: Deleting temp files then exiting!'; clean; exit 1" INT
+
+
+getid()
+{
+    if [ $lock ]
+    then
+        # get pid's of all files currently locked
+        cat /proc/locks > locks$$.temp
+    fi
+
+    # get pid of xbps-install command (and not "sudo xbps-install")
+    ps -aux | grep --extended-regexp "/[u]sr/bin/xbps-install" > xbpsId$$.temp
+
+    ps -aux | grep --extended-regexp "/[u]sr/local/sbin/xbps-install" > queue$$.temp
+}
+
+
+queue()
+{
+    _RET_QUEUE=0
+
+    linenumber=1
+    while read line
+    do
+        id=$line
+
+        if [ $$ -eq $id ]
+        then
+            break
+        else
+            ((linenumber++))
+        fi
+    done < <(awk '{print $2}' queue$$.temp)
+
+    _RET_QUEUE=$linenumber
+}
+
+
+searchid()
+{
+    # initially assume no match between xbps pid and lock file pid
+    _RET_SEARCHID=0
+
+    # if the xbpsId$$.temp file is not empty (i.e. there is a xbps-install process going on)
+    if [ -s xbpsId$$.temp ]
+    then
+
+        while read line
+        do
+            # set the xbpsId variale to hold the xbps-install pid
+            xbpsId=$line
+            #echo $xbpsId
+        done < <(awk 'v {print $2}' v="/usr/bin/xbps-install/" xbpsId$$.temp)
+
+        if [ $lock ]
+        then
+            while read lock
+            do
+                # compare lock pid's to the xbps pid
+                if [ $xbpsId -eq $lock ]
+                then
+                    # the xbps-install pid matches a lock file pid
+                    _RET_SEARCHID=1
+                fi
+            done < <(awk '{print $5}' locks$$.temp)
+
+        else
+            # search for /usr/bin/xbps-install in all pid's
+            if [ -n $xbpsId  ]
+            then
+                _RET_SEARCHID=1
+            fi
+        fi
+    fi
+}
+
+
+waitForUnlock()
+{
+    total="$(wc -l < queue$$.temp)"
+
+    # I'll try spinning. That's a good trick!
+    case $(($i % 4)) in
+            0 ) j="-" ;;
+            1 ) j="\\" ;;
+            2 ) j="|" ;;
+            3 ) j="/" ;;
+    esac
+
+    echo -en "\r[$j] Waiting for other software managers to finish... queue: $_RET_QUEUE / $total"
+
+    ((i=i+1))
+}
+
+
+clean()
+{
+    rm locks$$.temp
+    rm xbpsId$$.temp
+    rm queue$$.temp
+}
+
+
+getid
+queue
+searchid
+
+i=1
+while [ $_RET_QUEUE -gt 1  ] || [ $_RET_SEARCHID -eq 1 ]
+do
+    getid
+    queue
+    searchid
+    waitForUnlock
+    sleep $refreshInterval
+done
+
+echo
+
+/usr/bin/xbps-install "$@"
+
+clean

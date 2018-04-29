@@ -1,0 +1,23 @@
+#
+# cgit config
+# see cgitrc(5) for details
+
+css=/cgit-css/cgit.css
+logo=/cgit-css/cgit.png
+
+
+
+# https://wiki.archlinux.org/index.php/Cgit#Configuration_of_web_server
+
+#
+# List of repositories.
+# This list could be kept in a different file (e.g. '/etc/cgitrepos')
+# and included like this:
+#   include=/etc/cgitrepos
+#
+
+scan-path=/srv/git/
+enable-git-config=1
+
+
+
