@@ -23,11 +23,20 @@ waitForDisk()
 i=0
 while [ true ]
 do
-    if mount | grep -q /dev/cdrom; then
+    if ! mount | grep -q /dev/cdrom; then
         echo -e "\e[1;36mcd detected, starting script...\e[m"
         # sleep 3
         ./music.sh
+
+        # if music script encountered problems, exit script.
+        if [ $? -ne 0 ]
+        then
+            echo -e "\e[1;31mmusic.sh hit rocky waters.\e[m" >&2
+            exit 1
+        fi
+
         wait
+
     else
         waitForDisk
     fi

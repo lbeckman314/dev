@@ -22,7 +22,7 @@ EMAIL="lbeckman314@gmail.com"
 
 
 # get tracks
-#abcde $OPTS
+abcde $OPTS
 
 # if abcde encountered problems, exit script.
 if [ $? -ne 0 ]
