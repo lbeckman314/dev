@@ -17,6 +17,9 @@ OPTS="-N -x -o mp3 -B"
 # nextcloud address
 URL="pi@liambeckman.com:/media/drive/nextcloud/music"
 
+# email address for notification
+EMAIL="lbeckman314@gmail.com"
+
 
 # get tracks
 abcde $OPTS
@@ -30,7 +33,7 @@ fi
 
 
 # email notification of completion (can now change cd's).
-echo ":)" | mail -s abcde lbeckman314@gmail.com
+echo ":)" | mail -s abcde $EMAIL
 
 
 # get latest music directory (album)
@@ -45,8 +48,8 @@ done
 
 
 # transfer album to pi to be accessible by nextcloud.
-scp -r $latest &
+scp -r $latest $URL &
 
 
-# wait until copy process if complete before exiting.
+# wait until copy process is complete before exiting.
 wait
