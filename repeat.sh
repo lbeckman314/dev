@@ -23,7 +23,7 @@ waitForDisk()
 i=0
 while [ true ]
 do
-    if ! mount | grep -q /dev/cdrom; then
+    if mount | grep -q /dev/cdrom; then
         echo -e "\e[1;36mcd detected, starting script...\e[m"
         # sleep 3
         ./music.sh
