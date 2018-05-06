@@ -48,5 +48,5 @@ done
 scp -r $latest &
 
 
-# wait until copy process if complete before exiting.
+# wait until copy process is complete before exiting.
 wait
