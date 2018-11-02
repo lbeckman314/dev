@@ -1,0 +1,9 @@
+#
+# /etc/fstab: static file system information
+# arch fstab
+# <file system>	<dir>	<type>	<options>	<dump>	<pass>
+# /dev/sda6
+UUID=234f5f80-b026-4f80-b22d-0c0bd43f5898	/         	ext4      	rw,relatime,data=ordered	0 1
+#UUID=b4689449-b442-4390-8c3c-4f1fa5c71d2f	/         	ext4      	rw,relatime,data=ordered	0 1
+/dev/sda5   none         swap    sw                   0 0
+
