@@ -19,27 +19,27 @@ refreshInterval=0.5
 lock=0
 
 # Parse any args
-# https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash 
+# https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 POSITIONAL=()
 while [ $# -gt 0 ]
 do
-	key="$1"
+    key="$1"
 
-	case $key in
-	    --lockfile)
-	    lock=1
-	    shift # past argument
-	    ;;
-	    --refresh)
-	    refreshInterval="$2"
-	    shift # past argument
-	    shift # past value
-	    ;;
-	    *)    # unknown option
-	    POSITIONAL+=("$1") # save it in an array for later
-	    shift # past argument
-	    ;;
-	esac
+    case $key in
+        --lockfile)
+        lock=1
+        shift # past argument
+        ;;
+        --refresh)
+        refreshInterval="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        *)    # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
@@ -118,7 +118,7 @@ searchid()
             fi
         fi
     fi
-}   
+}
 
 
 waitForUnlock()
