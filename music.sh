@@ -12,7 +12,7 @@
 # -x: eject cd after process
 # -o: output format (mp3)
 # -B: embed album art into tracks
-OPTS="-N -x -o mp3 -B"
+OPTS="-N -x -B -o mp3"
 
 # nextcloud address
 URL="pi@liambeckman.com:/media/drive/nextcloud/music"
@@ -20,6 +20,11 @@ URL="pi@liambeckman.com:/media/drive/nextcloud/music"
 # email address for notification
 EMAIL="lbeckman314@gmail.com"
 
+# directory to hold albums
+DIR="$HOME/Audio/cds/musicDir"
+
+
+cd $DIR
 
 # get tracks
 abcde $OPTS
@@ -28,7 +33,7 @@ abcde $OPTS
 if [ $? -ne 0 ]
 then
     echo -e "\e[1;31mabcde hit rocky waters.\e[m" >&2
-    exit 1
+    #exit 1
 fi
 
 
@@ -53,3 +58,4 @@ scp -r $latest $URL &
 
 # wait until copy process is complete before exiting.
 wait
+

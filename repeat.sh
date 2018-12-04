@@ -1,6 +1,7 @@
 #!/bin/bash
 # sources
 # https://askubuntu.com/questions/359855/how-to-detect-insertion-of-dvd-disc
+# https://www.linuxquestions.org/questions/slackware-14/detect-cd-tray-status-4175450610/
 
 
 waitForDisk()
@@ -19,14 +20,34 @@ waitForDisk()
     ((i=i+1))
 }
 
+sleepTime()
+{
+
+    # I'll try spinning. That's a good trick!
+    while [ $n -ge 0 ]
+    do
+        echo -en "\r[$n]\e[1;37m giving cd time to run...\e[m"
+
+        sleep 1
+        ((n=n-1))
+    done
+    echo
+}
+
 
 i=0
+n=15
 while [ true ]
 do
-    if mount | grep -q /dev/cdrom; then
-        echo -e "\e[1;36mcd detected, starting script...\e[m"
-        # sleep 3
-        ./music.sh
+    read count < albumNum
+    if ! ./trayopen /dev/sr0
+    then
+        echo -e "\n\e[1;36mcd detected, starting script...\e[m"
+        #sleep $n
+        sleepTime
+        date
+        date > .log/log.$count.txt
+        time ./music.sh | tee -a .log/log.$count.txt
 
         # if music script encountered problems, exit script.
         if [ $? -ne 0 ]
@@ -35,7 +56,13 @@ do
             exit 1
         fi
 
-        wait
+        date
+        date >> .log/log.$count.txt
+
+        # wait
+
+        ((count++))
+        echo $count > albumNum
 
     else
         waitForDisk

@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # Setting this, so the repo does not need to be given on the commandline:
-export BORG_REPO=ssh://pi@liambeckman.com:22/media/drive/borgBackup/arch
+#export BORG_REPO=ssh://pi@liambeckman.com:22/media/drive/borgBackup/arch
+export BORG_REPO=/run/media/liam/My\ Passport/borgBackup/arch
 
 # Setting this, so you won't be asked for your repository passphrase:
 #export BORG_PASSPHRASE='tempPass'
