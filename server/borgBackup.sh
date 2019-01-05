@@ -1,11 +1,9 @@
 #!/bin/sh
 
 # Setting this, so the repo does not need to be given on the commandline:
-#export BORG_REPO=ssh://pi@liambeckman.com:22/media/drive/borgBackup/arch
-export BORG_REPO=/run/media/liam/My\ Passport/borgBackup/arch
+export BORG_REPO=ssh://pi@liambeckman.com:22/media/drive/borgBackup/`hostname`
 
 # Setting this, so you won't be asked for your repository passphrase:
-#export BORG_PASSPHRASE='tempPass'
 export BORG_PASSCOMMAND='pass show borgBackup'
 # or this to ask an external program to supply the passphrase:
 #export BORG_PASSCOMMAND='pass show backup'
@@ -31,20 +29,24 @@ borg create                                 \
     --exclude '/home/*/.cache/*'            \
     --exclude '/var/cache/*'                \
     --exclude '/var/tmp/*'                  \
-                                            \
+    --exclude '*/.git/*'                  \
+    --exclude '*/node_modules/*'                  \
+    --exclude '/home/liam/Documents/code/projects/lineageos/*'                  \
+    \
     $BORG_REPO::`hostname`-`date -Iseconds` \
     $HOME/Documents                         \
     $HOME/Pictures                          \
     $HOME/Nextcloud                         \
     $HOME/Sync                              \
+    $HOME/Maildir                              \
     $HOME/.config                           \
     $HOME/.gnupg                            \
-    $HOME/Videos                            \
+    #$HOME/Videos                            \
+    #$HOME/Audio                             \
     $HOME/Desktop                           \
-    $HOME/Audio                             \
 
 
-backup_exit=$?
+    backup_exit=$?
 
 info "Pruning repository"
 
@@ -61,7 +63,7 @@ borg prune                          \
     --keep-weekly   4               \
     --keep-monthly  6               \
 
-prune_exit=$?
+    prune_exit=$?
 
 # use highest exit code as global exit code
 global_exit=$(( backup_exit > prune_exit ? backup_exit : prune_exit ))
